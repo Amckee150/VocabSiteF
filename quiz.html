@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vocabulary Quiz</title>
+    <style>
+        /* Your existing styles remain unchanged */
+        body {
+            font-family: 'Optima', sans-serif;
+            text-align: center;
+            margin: 35px;
+        }
+
+        #progress-bar {
+            width: 100%;
+            background-color: #ddd;
+            margin-top: 10px;
+            height: 20px;
+        }
+
+        #progress-bar-inner {
+            height: 100%;
+            background-color: #4caf50;
+        }
+
+        #feedback {
+            margin-top: 10px;
+            font-weight: bold;
+            font-size: 16px;
+            color: #f44336;
+        }
+
+#next-button {
+    display: none;
+    margin-top: 20px;
+    padding: 15px;
+    cursor: pointer;
+    font-size: 18px;
+    margin-left: auto;
+    margin-right: auto;
+    display: block;
+    background-color: #4caf50; /* Green background color */
+    color: #fff; /* White text color */
+    border: 1px solid #4caf50; /* Green border */
+    border-radius: 5px; /* Rounded corners */
+    transition: background-color 0.3s ease, color 0.3s ease; /* Smooth transition effect */
+}
+
+#next-button:hover {
+    background-color: #45a049; /* Darker green on hover */
+}
+
+        button {
+            margin-bottom: 30px; /* Increased space between buttons */
+            padding: 12px; /* Increased padding for larger buttons */
+            font-size: 24px; /* Increased font size for buttons */
+            cursor: pointer;
+        }
+
+        #title-container {
+            margin-top: 50px; /* Adjust the margin for title */
+        }
+
+        /* Add any additional styling here */
+    </style>
+</head>
+
+<body>
+
+    <div id="title-container">
+        <h1>Vocabulary Quiz</h1>
+        <button onclick="startQuiz()">Begin</button>
+    </div>
+
+    <div id="progress-bar" style="display: none;">
+        <div id="progress-bar-inner"></div>
+    </div>
+    <div id="question-container" style="display: none;"></div>
+    <div id="feedback" style="display: none;"></div>
+    <button id="next-button" onclick="nextQuestion()" style="display: none;">Next</button>
+
+    <!-- New div for displaying final score -->
+    </div>
+    </div>
+    <div id="final-score" style="display: none;"></div>
+
+ <script>
+        // Your existing vocabulary data
+         const vocabularyData = [
+      { word: "obfuscate", meaning: "to deliberately make something unclear or difficult to understand", options: [] },
+      { word: "quixotic", meaning: "extremely idealistic; unrealistic and impractical", options: [] },
+      { word: "ephemeral", meaning: "lasting for a very short time", options: [] },
+      { word: "facetious", meaning: "treating serious issues with deliberately inappropriate humor", options: [] },
+      { word: "intransigent", meaning: "unwilling to change one's views or to agree about something", options: [] },
+      { word: "serendipity", meaning: "the occurrence and development of events by chance in a happy or beneficial way", options: [] },
+      { word: "quagmire", meaning: "a soft boggy area of land that gives way underfoot", options: [] },
+      { word: "mellifluous", meaning: "pleasantly smooth and musical to hear", options: [] },
+      { word: "ubiquitous", meaning: "present, appearing, or found everywhere", options: [] },
+      { word: "labyrinthine", meaning: "complicated and confusing, like a labyrinth", options: [] },
+      { word: "plethora", meaning: "a large or excessive amount of something", options: [] },
+      { word: "equivocate", meaning: "use ambiguous language so as to conceal the truth or avoid committing oneself", options: [] },
+      { word: "effervescent", meaning: "giving off bubbles; fizzy", options: [] },
+      { word: "acerbic", meaning: "sharp and forthright; tasting sour or bitter", options: [] },
+      { word: "ineffable", meaning: "too great or extreme to be expressed or described in words", options: [] },
+      { word: "peregrinate", meaning: "to travel or wander around from place to place", options: [] },
+      { word: "esoteric", meaning: "intended for or understood by only a small number of people with special knowledge", options: [] },
+      { word: "quintessential", meaning: "representing the most perfect or typical example of a quality or class", options: [] },
+      { word: "anachronism", meaning: "a thing belonging or appropriate to a period other than that in which it exists, especially a thing that is conspicuously old-fashioned", options: [] },
+      { word: "effulgent", meaning: "shining brightly; radiant", options: [] },
+      { word: "cogent", meaning: "clear, logical, and convincing", options: [] },
+      { word: "efficacious", meaning: "effective; producing the desired outcome", options: [] },
+      { word: "eructation", meaning: "A burp or belch.", options: [] },
+      { word: "deleterious", meaning: "Causing harm or damage.", options: [] },
+      { word: "proclivity", meaning: "A tendency to choose or do something regularly; an inclination or predisposition.", options: [] },
+      { word: "iniquitous", meaning: "Wicked, unjust, morally wrong.", options: [] },
+      { word: "bulwark", meaning: "A defensive wall or barrier; something that protects or defends.", options: [] },
+      { word: "inane", meaning: "Lacking significance, meaning, or sense; silly; empty.", options: [] },
+      { word: "clandestine", meaning: "Kept secret or done secretively, especially because illicit.", options: [] },
+      { word: "euphoric", meaning: "Intensely happy or confident.", options: [] },
+      { word: "lucidity", meaning: "Clarity of thought or style; clearness.", options: [] },
+      { word: "banal", meaning: "Lacking originality; trite; commonplace.", options: [] },
+      { word: "trifle", meaning: "Something of little value or importance; a small amount.", options: [] },
+      { word: "echelon", meaning: "A level or rank in an organization, profession, or society.", options: [] },
+      { word: "assiduously", meaning: "With great care, attention, and diligence.", options: [] },
+      { word: "enshroud", meaning: "To cover, conceal, or hide; to envelop in a shroud.", options: [] },
+      { word: "impervious", meaning: "Not allowing fluid to pass through; incapable of being affected or disturbed.", options: [] },
+      { word: "vacillation", meaning: "Indecision or fluctuation, especially in one's opinions or actions.", options: [] },
+      { word: "syntactical", meaning: "Relating to the arrangement of words and phrases to create well-formed sentences in a language.", options: [] },
+      { word: "listlessly", meaning: "Lacking energy or enthusiasm; without interest or spirit.", options: [] },
+      { word: "inclination", meaning: "A person's natural tendency or urge to act or feel in a particular way; a preference.", options: [] },
+      { word: "incunable", meaning: "An early printed book, especially one printed before 1501.", options: [] },
+      { word: "profaned", meaning: "To treat something sacred with disrespect or contempt.", options: [] },
+      { word: "indignation", meaning: "Strong displeasure at something considered unjust, offensive, or insulting; righteous anger.", options: [] },
+      { word: "loquacious", meaning: "Very talkative or chatty.", options: [] },
+      { word: "subaltern", meaning: "A subordinate or junior in rank; lower in status or standing.", options: [] },
+      { word: "ensconced", meaning: "To settle comfortably or securely; to establish oneself in a safe or secret place.", options: [] },
+      { word: "doleful", meaning: "Expressing sorrow; mournful; melancholy.", options: [] },
+      { word: "affluent", meaning: "Wealthy or having an abundance of material riches.", options: [] },
+      { word: "pontificate", meaning: "To express one's opinions in a dogmatic or pompous manner; to speak or behave in a self-important way.", options: [] },
+      { word: "benign", meaning: "Kind, gentle, and harmless; having a favorable influence.", options: [] },
+      { word: "disquisition", meaning: "A detailed and systematic inquiry or investigation into a subject.", options: [] },
+      { word: "pertinence", meaning: "Relevance to the matter at hand; appropriateness.", options: [] },
+      { word: "vaunting", meaning: "Excessively boastful or proud; bragging.", options: [] },
+      { word: "autodidact", meaning: "A self-taught person; someone who has learned a subject without formal instruction.", options: [] },
+      { word: "disparate", meaning: "Distinctly different in kind; not allowing comparison.", options: [] },
+      { word: "indigent", meaning: "Lacking the necessities of life; experiencing poverty.", options: [] },
+      { word: "alacrity", meaning: "Brisk and cheerful readiness; eagerness.", options: [] },
+      { word: "sublime", meaning: "Of such excellence, grandeur, or beauty as to inspire great admiration or awe.", options: [] },
+      { word: "equivocation", meaning: "The use of ambiguous language to deceive or mislead; a statement with more than one interpretation.", options: [] },
+      { word: "juxtapose", meaning: "To place or deal with close together for contrasting effect.", options: [] },
+      { word: "sagacious", meaning: "Having or showing keen mental discernment and good judgment; wise.", options: [] },
+      { word: "recalcitrant", meaning: "Having an obstinately uncooperative attitude towards authority or discipline.", options: [] },
+      { word: "pernicious", meaning: "Having a harmful effect, especially in a gradual or subtle way.", options: [] },
+      { word: "perspicacious", meaning: "Having a ready insight into and understanding of things; perceptive.", options: [] },
+      { word: "sesquipedalian", meaning: "Characterized by long words; long-winded.", options: [] },
+      { word: "sycophant", meaning: "A person who acts obsequiously towards someone important in order to gain advantage; a servile flatterer.", options: [] },
+      { word: "debility", meaning: "Physical weakness or frailty.", options: [] },
+      { word: "prerogative", meaning: "An exclusive right or privilege, usually exercised by virtue of rank or office.", options: [] },
+      { word: "masquerade", meaning: "To pretend to be someone or something one is not; a disguise or pretense.", options: [] },
+      { word: "eminence", meaning: "High rank, status, or superiority; a position of prominence or distinction.", options: [] },
+      { word: "opprobrium", meaning: "Harsh criticism or censure; the public disgrace arising from shameful conduct.", options: [] },
+      { word: "lubricious", meaning: "Having a slippery or smooth quality; often used to describe something suggestive or lewd.", options: [] },
+      { word: "importune", meaning: "To request or beg persistently or urgently; to press or beset with solicitations.", options: [] },
+      { word: "phantasm", meaning: "A figment of the imagination; an illusion or ghostly apparition.", options: [] },
+      { word: "eclectic", meaning: "Deriving ideas, style, or taste from a broad and diverse range of sources.", options: [] },
+      { word: "purloin", meaning: "To steal; to take dishonestly.", options: [] },
+      { word: "soporific", meaning: "Tending to induce drowsiness or sleep; sleep-inducing.", options: [] },
+      { word: "rarified", meaning: "Of high moral or intellectual value; refined or esoteric.", options: [] },
+      { word: "austere", meaning: "Severe or strict in manner, attitude, or appearance; without excess or luxury.", options: [] },
+      { word: "idyllic", meaning: "Pleasing or picturesque in natural simplicity; peaceful and charming.", options: [] },
+      { word: "sublime", meaning: "Of such excellence, grandeur, or beauty as to inspire great admiration or awe.", options: [] },
+      { word: "indelible", meaning: "Making marks that cannot be removed; unforgettable.", options: [] },
+      { word: "pallor", meaning: "An unhealthy pale appearance; lack of color in the face.", options: [] },
+      { word: "artifice", meaning: "Clever or cunning devices or expedients, especially as used to trick or deceive others.", options: [] },
+      { word: "penchant", meaning: "A strong or habitual liking for something; a tendency to do something regularly.", options: [] },
+      { word: "paradigm", meaning: "A typical example or pattern of something; a model or framework.", options: [] },
+      { word: "supercilious", meaning: "Behaving or looking as though one thinks one is superior to others; haughty.", options: [] },
+      { word: "inordinate", meaning: "Exceeding reasonable limits; excessive.", options: [] },
+      { word: "exigent", meaning: "Pressing or demanding; requiring immediate attention or action.", options: [] },
+      { word: "impetus", meaning: "The force or energy with which a body moves; a driving force.", options: [] },
+      { word: "hallmark", meaning: "A distinctive feature or characteristic indicative of quality or excellence.", options: [] },
+      { word: "obsolescence", meaning: "The state of being outdated or no longer in use; the process of becoming obsolete.", options: [] },
+      { word: "accession", meaning: "The act of coming into a position of power or authority; the formal acceptance of something.", options: [] },
+      { word: "rumination", meaning: "The act of thinking carefully and for a long period about something; contemplation.", options: [] },
+      { word: "abnegation", meaning: "The act of renouncing or rejecting something, often one's own interests or needs.", options: [] },
+      { word: "trenchancy", meaning: "Keenness and forcefulness of expression; incisiveness.", options: [] },
+      { word: "prodigious", meaning: "Remarkably or impressively great in extent, size, or degree; enormous.", options: [] },
+      { word: "jingoist", meaning: "An extreme nationalist, especially one who advocates aggressive and warlike foreign policy.", options: [] },
+      { word: "lothario", meaning: "A man who behaves selfishly and irresponsibly in his sexual relationships; a womanizer.", options: [] },
+      { word: "maverick", meaning: "An independent-minded or nonconformist person; someone who refuses to follow the norms.", options: [] },
+      { word: "nemesis", meaning: "A formidable and usually victorious rival or opponent; a source of harm or ruin.", options: [] },
+      { word: "philanderer", meaning: "A man who engages in casual love affairs; a womanizer.", options: [] },
+      { word: "philippic", meaning: "A bitter attack or denunciation, especially in speech.", options: [] },
+      { word: "procrustean", meaning: "Enforcing conformity by ruthless or arbitrary means; disregarding individual differences.", options: [] },
+      { word: "protean", meaning: "Versatile; able to change easily or take on different forms.", options: [] },
+      { word: "pyrrhic", meaning: "Involving heavy losses or sacrifices, especially in a victory that barely compensates.", options: [] },
+      { word: "saturnine", meaning: "Gloomy, sullen, or morose in temperament; having a sardonic or cynical quality.", options: [] },
+      { word: "solecism", meaning: "A grammatical mistake; a breach of good manners or etiquette.", options: [] },
+      { word: "spoonerism", meaning: "An error in speech or deliberate play on words in which corresponding consonants or vowels are switched between words.", options: [] },
+      { word: "sybarite", meaning: "A person who is devoted to luxury and pleasure; a hedonist.", options: [] },
+      { word: "tawdry", meaning: "Showy but cheap and of poor quality; morally sordid or base.", options: [] },
+      { word: "cabal", meaning: "A secret political clique or faction; a group engaged in a plot.", options: [] },
+      { word: "camaraderie", meaning: "Mutual trust and friendship among people who spend a lot of time together.", options: [] },
+      { word: "caste", meaning: "A rigid social class system, especially in India; a hereditary social group limited to specific occupations or roles.", options: [] },
+      { word: "cortege", meaning: "A formal procession, especially for a funeral; a train of attendants.", options: [] },
+      { word: "clandestine", meaning: "Kept secret or done secretively, especially because illicit.", options: [] },
+      { word: "detente", meaning: "The easing of hostility or strained relations, especially between countries.", options: [] },
+      { word: "ecumenical", meaning: "Representing a number of different Christian churches; promoting unity among different religious groups.", options: [] },
+      { word: "elite", meaning: "A select group that is superior in terms of ability, wealth, or social status.", options: [] },
+      { word: "hierarchy", meaning: "A system or organization in which people or groups are ranked one above the other according to status or authority.", options: [] },
+      { word: "hobnob", meaning: "To associate or mix socially with others, especially those considered socially superior.", options: [] },
+      { word: "liaison", meaning: "A person who acts as a link to assist communication or cooperation between groups; a romantic or sexual relationship.", options: [] },
+      { word: "rapprochement", meaning: "The reestablishment of cordial relations; a bringing together again.", options: [] },
+      { word: "acidulous", meaning: "Slightly acid or sour in taste; sharp-tongued or critical in expression.", options: [] },
+      { word: "avaricious", meaning: "Having an extreme desire for wealth; greedy for riches.", options: [] },
+      { word: "baleful", meaning: "Threatening harm or evil; ominous.", options: [] },
+      { word: "bellicose", meaning: "Demonstrating a warlike or aggressive nature; eager to fight.", options: [] },
+      { word: "bilious", meaning: "Bad-tempered; irritable; associated with bile and hence a sickly yellow color.", options: [] },
+      { word: "bumptious", meaning: "Self-assertive or proud to an irritating degree; obtrusive and pushy.", options: [] },
+      { word: "captious", meaning: "Quick to find fault or raise petty objections; critical in a negative and petty way.", options: [] },
+      { word: "churlish", meaning: "Rude in a mean-spirited and surly way; lacking manners or civility.", options: [] },
+      { word: "complaisant", meaning: "Willing to please or oblige; agreeable; obliging.", options: [] },
+      { word: "contrite", meaning: "Feeling remorseful and affected by guilt; penitent.", options: [] },
+      { word: "convivial", meaning: "Friendly, sociable, and marked by cheerful atmosphere; jovial.", options: [] },
+      { word: "craven", meaning: "Lacking courage; cowardly; pusillanimous.", options: [] },
+      { word: "debonair", meaning: "Confident, stylish, and charming, especially in a sophisticated or elegant way.", options: [] },
+      { word: "dyspeptic", meaning: "Grumpy, irritable, or having indigestion; pessimistic and gloomy.", options: [] },
+      { word: "lachrymose", meaning: "Tending to cause tears; mournful or tearful.", options: [] }
+];
+   
+    let selectedQuestions = [];
+    const numQuestionsToAsk = 15;
+    let currentQuestion = 0;
+    let score = 0;
+
+    // Select random questions
+    function selectRandomQuestions() {
+        const shuffledQuestions = [...vocabularyData].sort(() => Math.random() - 0.5);
+        selectedQuestions = shuffledQuestions.slice(0, numQuestionsToAsk);
+    }
+
+    // Initialize options for each selected question
+    function initializeQuestions() {
+        selectedQuestions.forEach(data => {
+            const correctMeaning = data.meaning;
+            const otherOptions = selectedQuestions
+                .filter(meaning => meaning.meaning !== correctMeaning)
+                .map(meaning => meaning.meaning)
+                .slice(0, 3);
+
+            data.options = shuffleOptions(correctMeaning, otherOptions);
+        });
+    }
+
+    // Shuffle options
+    function shuffleOptions(correctOption, otherOptions) {
+        const options = otherOptions.concat(correctOption);
+        for (let i = options.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [options[i], options[j]] = [options[j], options[i]];
+        }
+        return options;
+    }
+
+    // Display question
+    function displayQuestion() {
+        const questionContainer = document.getElementById("question-container");
+        const feedbackContainer = document.getElementById("feedback");
+        const nextButton = document.getElementById("next-button");
+        const data = selectedQuestions[currentQuestion];
+        const word = data.word;
+        const correctMeaning = data.meaning;
+        const options = data.options;
+
+  const questionHtml = `
+        <h2 style="font-size: 52px;">Question ${currentQuestion + 1}</h2>
+        <p style="font-size: 36px; margin-bottom: 20px;">What does the word '<strong>${word}</strong>' mean?</p>
+        <div>
+            ${options.map((option, index) => `<button onclick="checkAnswer(${index})">${index + 1}. ${option}</button><br>`).join('')}
+        </div>
+    `;
+
+        questionContainer.innerHTML = questionHtml;
+        feedbackContainer.textContent = ''; // Clear previous feedback
+        nextButton.style.display = 'none';
+
+        // Update progress bar
+        const progressBarInner = document.getElementById("progress-bar-inner");
+        const progressPercentage = ((currentQuestion + 1) / numQuestionsToAsk) * 100;
+        progressBarInner.style.width = `${progressPercentage}%`;
+
+        // Enable all buttons for the new question
+        document.querySelectorAll("#question-container button").forEach(button => button.disabled = false);
+    }
+
+    // Display feedback
+    function displayFeedback(isCorrect, selectedIndex) {
+        const feedbackContainer = document.getElementById("feedback");
+        const feedback = document.createElement("div");
+        feedback.style.marginTop = "10px";
+        feedback.style.fontWeight = "bold";
+
+        const options = document.querySelectorAll("#question-container button");
+
+        if (isCorrect) {
+            feedback.style.color = "#4caf50"; // Green for correct
+            feedback.textContent = "Correct!";
+            score++;
+            options[selectedIndex].style.backgroundColor = "#8FED8B"; // Light green
+        } else {
+            const correctMeaning = selectedQuestions[currentQuestion].meaning;
+            feedback.style.color = "#f44336"; // Red for incorrect
+            feedback.textContent = `Incorrect! The correct answer was: ${correctMeaning}`;
+            options[selectedIndex].style.backgroundColor = "#FFCDD2"; // Light red
+        }
+
+        feedbackContainer.innerHTML = ''; // Clear previous feedback
+        feedbackContainer.appendChild(feedback);
+
+        const nextButton = document.getElementById("next-button");
+        nextButton.style.display = "block";
+    }
+
+    // Check answer
+    function checkAnswer(selectedIndex) {
+        const data = selectedQuestions[currentQuestion];
+        const correctMeaning = data.meaning;
+        const selectedMeaning = data.options[selectedIndex];
+
+        displayFeedback(selectedMeaning === correctMeaning, selectedIndex);
+    }
+
+    function nextQuestion() {
+        const nextButton = document.getElementById("next-button");
+        nextButton.style.display = "none";
+
+        currentQuestion++;
+
+        if (currentQuestion < numQuestionsToAsk) {
+            displayQuestion();
+        } else {
+            // Display the final score instead of using alert
+            showFinalScore();
+        }
+    }
+
+    // New function to display the final score
+    function showFinalScore() {
+        const scoreContainer = document.getElementById("final-score");
+        scoreContainer.textContent = `Quiz completed! Your final score is: ${score}/${numQuestionsToAsk}`;
+        scoreContainer.style.display = "block";
+    }
+
+    function startQuiz() {
+        document.getElementById("title-container").style.display = "none";
+        document.getElementById("progress-bar").style.display = "block";
+        document.getElementById("question-container").style.display = "block";
+        document.getElementById("next-button").style.display = "block";
+        selectRandomQuestions();
+        initializeQuestions();
+        displayQuestion();
+    }
+</script>
+
+</body>
+
+</html>
